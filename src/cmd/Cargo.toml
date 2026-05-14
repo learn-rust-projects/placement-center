@@ -12,11 +12,8 @@ serde.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true
 common-base.workspace = true
-
-[[bin]]
-name = "placement-center"
-path = "src/placement-center/server.rs"
-
+placement-center.workspace = true
+tokio.workspace = true
 [[bin]]
 name = "metadata-service"
 path = "src/metadata-service/server.rs"

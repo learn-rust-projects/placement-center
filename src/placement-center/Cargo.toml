@@ -5,3 +5,12 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+tokio.workspace = true
+axum.workspace = true
+common-base.workspace = true
+log.workspace = true
+log4rs.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+toml.workspace = true
+serde_json.workspace = true
