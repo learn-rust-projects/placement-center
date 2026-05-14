@@ -1,0 +1,77 @@
+# log4rs 配置文件 - 用于配置 Rust 应用程序的日志系统
+# 参考文档: https://docs.rs/log4rs/1.3.0/log4rs/
+
+# appenders 部分 - 定义日志输出目的地
+appenders:
+  # 定义一个名为stdout的appender，功能是将日志输出到控制台
+  stdout:                    # appender 名称: stdout
+    kind: console           # 类型: 控制台输出
+
+  # 定义一个名为server的appender，功能是将日志输出到名为server.log的滚动文件
+  # 每个文件大小 1gb，文件序号从 0 开始到 50
+  # 日志的格式为"{d(%Y-%m-%d %H:%M:%S)} {h({l})} {m}{n}"
+  # 日志格式参考这个文档：https://docs.rs/log4rs/1.3.0/log4rs/encode/pattern/index.html
+  server:                   # appender 名称: server
+    kind: rolling_file      # 类型: 滚动文件
+    path: "{$path}/server.log"  # 日志文件路径，{$path} 是变量，会在运行时替换
+    encoder:                # 编码器配置 - 定义日志格式
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} {h({l})} {m}{n}"  # 日志格式模式
+    policy:                 # 滚动策略配置
+      trigger:              # 触发滚动的条件
+        kind: size          # 基于文件大小触发
+        limit: 1 gb         # 文件大小限制: 1GB
+      roller:               # 滚动器配置 - 处理文件滚动
+        kind: fixed_window  # 类型: 固定窗口滚动
+        pattern: "{$path}/server-{}.log"  # 滚动文件命名模式，{} 会被序号替换
+        base: 0             # 起始序号: 0
+        count: 50           # 最大文件数量: 50个
+
+  # 参考 server - 定义另一个类似的滚动文件appender用于请求日志
+  requests:                 # appender 名称: requests
+    kind: rolling_file      # 类型: 滚动文件
+    path: "{$path}/requests-log.log"  # 请求日志文件路径
+    encoder:                # 编码器配置
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} {h({l})} {m}{n}"  # 与server相同的日志格式
+    policy:                 # 滚动策略配置
+      trigger:              # 触发条件
+        kind: size          # 基于文件大小触发
+        limit: 1 gb         # 文件大小限制: 1GB
+      roller:               # 滚动器配置
+        kind: fixed_window  # 类型: 固定窗口滚动
+        pattern: "{$path}/requests-log-{}.log"  # 滚动文件命名模式
+        base: 0             # 起始序号: 0
+        count: 50           # 最大文件数量: 50个
+
+# 默认清况下，所有的日志都会输出到 stdout和 server 两个 appender
+# root logger - 根日志记录器配置，所有未明确配置的日志都使用此配置
+root:
+  level: info              # 日志级别: info (信息级别及以上)
+  appenders:               # 使用的appender列表
+    - stdout               # 输出到控制台
+    - server               # 输出到server.log文件
+
+# 这个需要重点注意，可以将不同 lib 或 mod 中的日志输出到不同的文件
+# loggers 部分 - 为特定的日志记录器配置不同的输出
+loggers:
+  # 将 placement_center::server模块的日志会写入到 stdout 和 server 两个 appender
+  placement_center::server:  # 日志记录器名称: placement_center::server模块
+    level: info             # 日志级别: info
+    appenders:              # 使用的appender列表
+      - stdout              # 输出到控制台
+      - server              # 输出到server.log文件
+    additive: false         # 是否继承root的appender: false(不继承)
+
+  # 将 placement_center::requests模块的日志会写入到 stdout 和 requests 两个 appender
+  placement_center::requests:  # 日志记录器名称: placement_center::requests模块
+    level: info             # 日志级别: info
+    appenders:              # 使用的appender列表
+      - stdout              # 输出到控制台
+      - requests            # 输出到requests-log.log文件
+    additive: false         # 是否继承root的appender: false(不继承)
+
+# 日志格式说明:
+# {d(%Y-%m-%d %H:%M:%S)} - 日期时间，格式: 年-月-日 时:分:秒
+# {h({l})} - 日志级别，使用高亮显示
+# {m} - 日志消息内容
+# {n} - 换行符
+# 示例输出: "2024-01-15 14:30:25 INFO Starting server..."

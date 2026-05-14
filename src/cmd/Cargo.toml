@@ -5,7 +5,18 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+clap = { version = "4.6.1", features = ["derive"] }
+log.workspace = true
+log4rs.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+toml.workspace = true
+common-base.workspace = true
 
 [[bin]]
 name = "placement-center"
 path = "src/placement-center/server.rs"
+
+[[bin]]
+name = "metadata-service"
+path = "src/metadata-service/server.rs"
