@@ -1,0 +1,27 @@
+
+[workspace]
+members = [
+    "src/common/base",
+    "src/placement-center",
+    "src/cmd",
+    "src/protocol",
+]
+resolver = "3"
+
+[workspace.package]
+name = "template"
+version = "0.1.1"
+edition = "2024"
+license = "MIT"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+
+## workspaces members
+placement-center = { path = "src/placement-center" }
+cmd = { path = "src/cmd" }
+protocol = { path = "src/protocol" }
+common-base = { path = "src/common/base" }
